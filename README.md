@@ -21,7 +21,7 @@ npm run dev
 ```dotenv
 AI_PROVIDER=gemini
 GEMINI_API_KEY=ваш_ключ
-GEMINI_MODEL=gemini-3.8-flash
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
 Перезапустіть сервер після зміни `.env`. `AI_PROVIDER` задає початковий вибір (`gemini`, `openai`, `anthropic`); для інших сервісів використовуються `OPENAI_API_KEY` та `ANTHROPIC_API_KEY`. На Vercel задайте ці змінні в Environment Variables та зробіть redeploy. Ключі не повертаються браузеру. Gemini використовує [generateContent зі структурованою відповіддю](https://ai.google.dev/api/generate-content); доступність безкоштовної квоти залежить від моделі й проєкту.

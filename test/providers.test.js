@@ -12,17 +12,19 @@ test('provider selection, Gemini schema and responses, and failure handling', as
     process.env.OPENAI_API_KEY = 'openai-test';
     process.env.ANTHROPIC_API_KEY = 'anthropic-test';
     process.env.AI_PROVIDER = 'gemini';
-    process.env.GEMINI_MODEL = 'gemini-3.8-flash';
+    process.env.GEMINI_MODEL = 'gemini-3.1-flash-lite';
     assert.equal(aiConfig().defaultProvider, 'gemini');
     assert.ok(aiConfig().providers.every(p => p.configured));
     for (const provider of ['gemini', 'openai', 'anthropic']) {
       globalThis.fetch = async (url, options) => {
         const body = JSON.parse(options.body);
         if (provider === 'gemini') {
-          assert.equal(url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent');
+          assert.equal(url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent');
           assert.equal(options.headers['x-goog-api-key'], 'gemini-test');
           assert.equal(options.headers.Authorization, undefined);
           assert.equal(body.generationConfig.responseMimeType, 'application/json');
+          assert.equal(body.generationConfig.maxOutputTokens, 1024);
+          assert.equal(body.generationConfig.thinkingConfig.thinkingLevel, 'minimal');
           assert.ok(body.generationConfig.responseSchema.required.includes('draftReply'));
           assert.equal(JSON.parse(body.contents[0].parts[0].text).customerName, 'User');
         } else {
