@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Вхід · support.ai</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f7f8fc;color:#17233b;font-family:system-ui,sans-serif;min-height:100vh;display:grid;place-items:center;padding:24px}.card{width:100%;max-width:420px;background:white;border:1px solid #e9ecf3;border-radius:18px;padding:32px}a{color:#6955e9}nav{display:flex;gap:16px;margin:24px 0}nav a[aria-current=page]{font-weight:700}h1{font-size:25px}p{color:#79869b;line-height:1.5}label{display:block;margin:20px 0 8px;font-size:14px}input,button{font:inherit;width:100%;border-radius:10px;padding:12px}input{border:1px solid #dfe4ee}button{margin-top:24px;border:0;background:#6955e9;color:white;cursor:pointer}button:disabled{opacity:.6}#error{color:#a43f4b}.brand{font-size:22px;font-weight:800;color:#6955e9}</style></head>
+<body><main class="card"><div class="brand">✦ support.ai</div><nav aria-label="Тип входу"><a href="/login" id="user-link">Користувач</a><a href="/admin/login" id="admin-link">Адміністратор</a></nav><h1 id="title">Вхід користувача</h1><p id="description">Створюйте та переглядайте свої звернення.</p><form id="login-form"><label for="login">Логін</label><input id="login" autocomplete="username" required maxlength="120"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required maxlength="1000"><p id="error" role="alert"></p><button id="submit">Увійти</button></form></main>
+<script type="module">
+const admin=location.pathname==='/admin/login',role=admin?'admin':'user';
+document.getElementById(role+'-link').setAttribute('aria-current','page');
+if(admin){document.getElementById('title').textContent='Вхід адміністратора';document.getElementById('description').textContent='Переглядайте всі звернення та запускайте AI-аналіз.'}
+document.getElementById('login-form').addEventListener('submit',async event=>{
+  event.preventDefault();const button=document.getElementById('submit'),error=document.getElementById('error');button.disabled=true;error.textContent='';
+  try{const response=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,login:document.getElementById('login').value,password:document.getElementById('password').value})});const data=await response.json();if(!response.ok)throw Error(data.error||'Не вдалося увійти.');location.replace(admin?'/admin':'/');}catch(err){error.textContent=err.message}finally{button.disabled=false}
+});
+</script></body></html>
