@@ -1,11 +1,33 @@
 {
   "version": 2,
-  "functions": { "api/index.js": { "maxDuration": 30 } },
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/admin/login", "destination": "/login.html" },
-    { "source": "/admin", "destination": "/index.html" },
-    { "source": "/api/:path*", "destination": "/api/index.js" },
-    { "source": "/", "destination": "/index.html" }
-  ]
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/admin/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
+  ],
+  "framework": null,
+  "buildCommand": "node scripts/build.mjs",
+  "outputDirectory": "public"
 }

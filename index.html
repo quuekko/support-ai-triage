@@ -29,7 +29,7 @@
     let requests=[];const $=id=>document.getElementById(id);
     const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     function toast(message,error=false){const el=document.createElement('div');el.className='notice'+(error?' error':'');el.textContent=message;document.body.append(el);setTimeout(()=>el.remove(),4200)}
-    async function api(path,method='GET',data){const response=await fetch('/api'+path,{method,headers:{'Content-Type':'application/json'},body:data?JSON.stringify(data):undefined});const json=await response.json();if(response.status===401)location.replace(adminPage?'/admin/login':'/login');if(!response.ok)throw Error(json.error||'Помилка запиту');return json}
+    async function api(path,method='GET',data){const response=await fetch('/api'+path,{method,headers:{'Content-Type':'application/json'},body:data?JSON.stringify(data):undefined});const json=await response.json().catch(()=>{throw Error('Сервер повернув некоректну відповідь (HTTP '+response.status+'). Спробуйте оновити сторінку пізніше.')});if(response.status===401)location.replace(adminPage?'/admin/login':'/login');if(!response.ok)throw Error(json.error||'Помилка запиту');return json}
     const date=s=>new Intl.DateTimeFormat('uk-UA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(s));
     function render(){const q=$('search').value.trim().toLowerCase();const list=requests.filter(x=>(x.customerName+' '+x.message).toLowerCase().includes(q));$('count').textContent=requests.length+' звернень';const emptyHint=currentUser?.role==='admin'?'Тут з’являться звернення користувачів.':'Додайте перше звернення через форму ліворуч.';$('items').innerHTML=list.length?list.map(x=>{
       const a=x.analysis,priority=a?.priority,kind=priority==='високий'?'high':priority==='середній'?'medium':'low';
@@ -68,6 +68,14 @@
       }
       const {requests:items}=await api('/requests');requests=items;render();
     }
-    start().catch(err=>toast(err.message,true));
+    start().catch(err=>{
+      document.querySelector('.shell').hidden=true;
+      document.body.hidden=false;
+      const panel=document.createElement('div');panel.className='card form-card';panel.style.margin='40px auto';panel.style.maxWidth='600px';
+      const title=document.createElement('h1');title.textContent='Не вдалося завантажити сторінку';
+      const message=document.createElement('p');message.textContent=err.message;
+      const link=document.createElement('a');link.href=adminPage?'/admin/login':'/login';link.textContent='Перейти до входу';
+      panel.append(title,message,link);document.body.append(panel);
+    });
   </script>
 </body></html>
